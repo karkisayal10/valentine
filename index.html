@@ -384,7 +384,7 @@
 
     <script>
       // --- CONFIGURATION ---
-      const secretPassword = "bracelet"; 
+      const secretPassword = "Bracelet"; 
       let tries = 0;
       const hints = [
   "Hint 1: A tiny circle that holds half a heart each ❤️",
@@ -392,38 +392,35 @@
   "Hint 3: Together we complete it, a symbol of ‘us’ 💕"
 ];
 
-      // --- PASSWORD prompter ---
-      function askPass() {
-        // background blur script
-        document.body.classList.add("blur-background");
+function askPass() {
+  document.body.classList.add("blur-background");
 
-        let message =
-          tries === 0
-            ? "Namaste Nirdeshika ❤️\n\nGuess the password:" 
-            : "Wrong! ❌\n\n" + hints[tries - 1];
+  let message =
+    tries === 0
+      ? "Namaste Nirdeshika ❤️\n\nGuess the password:"
+      : "Wrong! ❌\n\n" + hints[tries - 1];
 
-        // Brief timeout ensures the blur renders before the browser pauses for the prompt
-        setTimeout(() => {
-          const pass = prompt(message);
+  setTimeout(() => {
+    const pass = prompt(message);
 
-          if (pass === secretPassword) {
-            alert("Correct! You are right my love. There is more to come"); //edit here for correct message
-            // Removes blur and start the site
-            document.body.classList.remove("blur-background");
-            initPage();
-          } else {
-            tries++;
-            if (tries < 4) {
-              askPass();
-            } else {
-              document.body.classList.remove("blur-background");
-              document.body.innerHTML =
-                '<h1 style="text-align:center; margin-top:20%; color:#ff4d6d;">Aww, ask your love for the password and refresh if you get it wrong! 😂</h1>'; 
-              window.stop();
-            }
-          }
-        }, 100);
+    if (pass && pass.toLowerCase() === secretPassword.toLowerCase()) {
+      alert("Correct! You are right my love. There is more to come");
+      document.body.classList.remove("blur-background");
+      initPage();
+    } else {
+      tries++;
+      if (tries < 4) {
+        askPass();
+      } else {
+        document.body.classList.remove("blur-background");
+        document.body.innerHTML =
+          '<h1 style="text-align:center; margin-top:20%; color:#ff4d6d;">Aww, ask your love for the password and refresh if you get it wrong! 😂</h1>';
+        window.stop();
       }
+    }
+  }, 100);
+}
+
 
       // Start the gatekeeper immediately
       askPass();
