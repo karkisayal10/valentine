@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>For you maya ❤️❤️</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(180deg, #ffcad4 0%, #fbc2eb 100%);
+        font-family: "Segoe UI", "Cursive", sans-serif;
+        overflow: hidden;
+        position: relative;
+        touch-action: none;
+      }
+
+      /* Floating Elements Container */
+      .floating-elements {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      .element {
+        position: absolute;
+        user-select: none;
+        will-change: transform, opacity;
+        filter: drop-shadow(0 8px 15px rgba(0, 0, 0, 0.08));
+        opacity: 0;
+      }
+
+      /* Anime Proposal Scene Styling */
+      .proposal-scene {
+        position: absolute;
+        top: -240px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 220px;
+        z-index: 2001;
+        pointer-events: none;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        animation: scenePop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      @keyframes scenePop {
+        from {
+          transform: translateX(-50%) scale(0);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(-50%) scale(1);
+          opacity: 1;
+        }
+      }
+
+      .anime-character {
+        width: 150px;
+        height: auto;
+        filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.1));
+        animation: heartBeat 2s infinite ease-in-out;
+      }
+
+      @keyframes heartBeat {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      /* Speech Bubble Styling adjusted for boy's mouth */
+      .speech-bubble {
+        position: absolute;
+        top: -55px;
+        right: 120px;
+        background: white;
+        border: 3px solid #ff4d6d;
+        border-radius: 20px;
+        padding: 8px 15px;
+        font-size: 12px;
+        font-weight: bold;
+        color: #ff4d6d;
+        white-space: nowrap;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        opacity: 0;
+        transform: scale(0);
+        transform-origin: bottom right;
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        z-index: 2002;
+      }
+
+      /* Arrow/Tail pointing to boy's mouth */
+      .speech-bubble::after {
+        content: "";
+        position: absolute;
+        bottom: -12px;
+        right: 25px;
+        border-width: 12px 10px 0;
+        border-style: solid;
+        border-color: #ff4d6d transparent transparent;
+      }
+
+      .speech-bubble.show {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      /* Main Question Card Container */
+      .card-wrapper {
+        position: relative;
+        z-index: 2000;
+        width: 85%;
+        max-width: 380px;
+      }
+
+      #card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(15px);
+        border-radius: 30px;
+        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.12);
+        text-align: center;
+        padding: 45px 25px;
+        border: 1px solid rgba(255, 255, 255, 0.7);
+      }
+
+      h1 {
+        color: #444;
+        font-size: 24px;
+        margin-bottom: 30px;
+        line-height: 1.4;
+      }
+      .valentine-text {
+        color: #ff4d6d;
+        font-weight: 800;
+      }
+
+      .btn-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+      }
+
+      button {
+        padding: 14px 38px;
+        font-size: 16px;
+        border-radius: 35px;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      #yesBtn {
+        background: #ff4d6d;
+        color: white;
+        box-shadow: 0 8px 20px rgba(255, 77, 109, 0.3);
+      }
+      #noBtn {
+        background: #f0f0f0;
+        color: #888;
+        position: relative;
+      }
+
+      /* POSTER STYLE CARDS */
+      .poster {
+        position: absolute;
+        width: 220px;
+        background: white;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        border-radius: 15px;
+        cursor: grab;
+        user-select: none;
+        display: none;
+        overflow: hidden;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease,
+          opacity 0.8s ease;
+      }
+
+      .poster.dragging {
+        cursor: grabbing;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+        transform: translate(-50%, -50%) scale(1.1);
+        z-index: 5000 !important;
+      }
+
+      .poster-header {
+        padding: 10px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #555;
+        text-align: center;
+      }
+      .poster img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        display: block;
+        pointer-events: none;
+      }
+
+      #final-msg {
+        position: fixed;
+        top: 40px;
+        width: 100%;
+        text-align: center;
+        z-index: 5;
+        color: #ff4d6d;
+        font-weight: 900;
+        font-size: 28px;
+        display: none;
+      }
+
+      #trust-msg {
+        position: fixed;
+        background: rgba(255, 255, 255, 0.98);
+        padding: 40px 30px;
+        border-radius: 25px;
+        box-shadow: 0 0 40px rgba(255, 77, 109, 0.4);
+        z-index: 9000;
+        width: 85%;
+        max-width: 340px;
+        text-align: center;
+        display: none;
+        border: 3px solid #ff4d6d;
+        color: #444;
+        animation: msgGlow 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      @keyframes msgGlow {
+        from {
+          transform: scale(0.5);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      #overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.1);
+        z-index: 8500;
+        display: none;
+        pointer-events: none;
+      }
+
+      /* This makes the text bounce gently */
+      .hover-animation {
+        animation: textBounce 2s ease-in-out infinite;
+        display: block; /* Ensures it can move */
+      }
+
+      @keyframes textBounce {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-12px);
+        }
+      }
+
+      /* This will blur the entire page */
+      .blur-background {
+        filter: blur(20px);
+        transition: filter 0.3s ease;
+        pointer-events: none; /* Prevents clicking anything while blurred */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="floating-elements" id="elementContainer"></div>
+    <div id="overlay"></div>
+    <div id="final-msg" class="hover-animation">Moments of Us</div>
+
+    <div id="trust-msg">
+      <h2 style="color: #ff4d6d; margin-top: 0; font-size: 28px">
+        For the Love of My Life
+      </h2>
+      <p style="font-size: 20px; line-height: 1.6; font-weight: 600">
+        On this special day, I don’t just want to surprise you… I want to ask you — will you be mine forever? 🌸
+      </p>
+    </div>
+
+    <div class="card-wrapper" id="cardArea">
+      <div class="proposal-scene">
+        <div id="boyBubble" class="speech-bubble">CHARACTAR KO BUBBLE</div>
+        <img
+          src="https://thumbs.dreamstime.com/z/cute-boy-girl-stand-holding-red-heart-together-happy-couple-love-valentine-day-dating-romantic-cartoon-cute-boy-344406843.jpg?ct=jpeg"
+          alt="Anime Couple"
+          class="anime-character"
+        />
+      </div>
+
+      <div id="card">
+        <h1>
+          Nirdeshika(Babe), will you be my <br /><span class="valentine-text"
+            >Valentine? ❤️</span
+          >
+        </h1>
+        <div class="btn-container">
+          <button id="yesBtn">YES</button>
+          <button id="noBtn">NO</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="poster" data-id="8" style="background: #fffde7; z-index: 103">
+      <div class="poster-header" style="background: #fff9c4">
+        Cuties Together ❤️❤️
+      </div>
+      <img src="photo/8.jpg" alt="8" />
+    </div>
+    <div class="poster" data-id="7" style="background: #e0f2f1; z-index: 104">
+      <div class="poster-header" style="background: #b2dfdb">
+        Side by Side, Sole to Sole❤️❤️❤️❤️
+      </div>
+      <img src="photo/7.JPG" alt="7" />
+    </div>
+    <div class="poster" data-id="6" style="background: #efebe9; z-index: 105">
+      <div class="poster-header" style="background: #d7ccc8">
+        Holding your hand forever ❤️❤️❤️
+      </div>
+      <img src="photo/6.JPG" alt="6" />
+    </div>
+    <div class="poster" data-id="5" style="background: #f3e5f5; z-index: 106">
+      <div class="poster-header" style="background: #e1bee7">
+        Her Name, My Pride❤️❤️
+      </div>
+      <img src="photo/5.JPG" alt="5" />
+    </div>
+    <div class="poster" data-id="4" style="background: #2fd73d; z-index: 107">
+        <div class="poster-header" style="background: #c8e6c9">
+          Selfie with my Forever ❤️❤️
+        </div>
+        <img src="photo/12.JPG" alt="4" />
+      </div>
+    <div class="poster" data-id="4" style="background: #e8f5e9; z-index: 107">
+      <div class="poster-header" style="background: #c8e6c9">
+        Written in Her Hands, Etched in Her Heart ❤️❤️
+      </div>
+      <img src="photo/4.JPG" alt="4" />
+    </div>
+    <div class="poster" data-id="3" style="background: #fce4ec; z-index: 108">
+      <div class="poster-header" style="background: #f8bbd0">
+        First Trip, Forever Memories ❤️❤️
+      </div>
+      <img src="photo/3.jpg" alt="3" />
+    </div>
+    <div class="poster" data-id="2" style="background: #fff3e0; z-index: 109">
+      <div class="poster-header" style="background: #ffe0b2">
+        My favourite ❤️❤️❤️
+      </div>
+      <img src="photo/2.JPG" alt="2" />
+    </div>
+    <div class="poster" data-id="1" style="background: #e3f2fd; z-index: 110">
+      <div class="poster-header" style="background: #bbdefb">
+        Our Beginning ❤️❤️❤️
+      </div>
+      <img src="photo/1.jpg" alt="1" />
+    </div>
+
+    <script>
+      // --- CONFIGURATION ---
+      const secretPassword = "bracelet"; 
+      let tries = 0;
+      const hints = [
+  "Hint 1: A tiny circle that holds half a heart each ❤️",
+  "Hint 2: Worn on our wrists, one for you, one for me 🖤🤍",
+  "Hint 3: Together we complete it, a symbol of ‘us’ 💕"
+];
+
+      // --- PASSWORD prompter ---
+      function askPass() {
+        // background blur script
+        document.body.classList.add("blur-background");
+
+        let message =
+          tries === 0
+            ? "Namaste Nirdeshika ❤️\n\nGuess the password:" 
+            : "Wrong! ❌\n\n" + hints[tries - 1];
+
+        // Brief timeout ensures the blur renders before the browser pauses for the prompt
+        setTimeout(() => {
+          const pass = prompt(message);
+
+          if (pass === secretPassword) {
+            alert("Correct! You are right my love. There is more to come"); //edit here for correct message
+            // Removes blur and start the site
+            document.body.classList.remove("blur-background");
+            initPage();
+          } else {
+            tries++;
+            if (tries < 4) {
+              askPass();
+            } else {
+              document.body.classList.remove("blur-background");
+              document.body.innerHTML =
+                '<h1 style="text-align:center; margin-top:20%; color:#ff4d6d;">Aww, ask your love(ma hai hehe) for the password and refresh if you get it wrong! 😂</h1>'; 
+              window.stop();
+            }
+          }
+        }, 100);
+      }
+
+      // Start the gatekeeper immediately
+      askPass();
+
+      //  SITE ko LOGIC (Runs only after correct password)
+      function initPage() {
+        const container = document.getElementById("elementContainer");
+        const items = ["🧸", "🍫", "🌸", "💖", "🌹", "✨", "💝", "🍭", "🍓"];
+
+        function createFloatingElement() {
+          const el = document.createElement("div");
+          el.classList.add("element");
+          el.innerText = items[Math.floor(Math.random() * items.length)];
+
+          const side = Math.floor(Math.random() * 4);
+          let startX, startY, endX, endY;
+
+          if (side === 0) {
+            startX = Math.random() * 100 + "vw";
+            startY = "115vh";
+            endX = Math.random() * 60 - 30 + "vw";
+            endY = "-20vh";
+          } else if (side === 1) {
+            startX = Math.random() * 100 + "vw";
+            startY = "-15vh";
+            endX = Math.random() * 60 - 30 + "vw";
+            endY = "115vh";
+          } else if (side === 2) {
+            startX = "-15vw";
+            startY = Math.random() * 100 + "vh";
+            endX = "115vw";
+            endY = Math.random() * 60 - 30 + "vh";
+          } else {
+            startX = "115vw";
+            startY = Math.random() * 100 + "vh";
+            endX = "-15vw";
+            endY = Math.random() * 60 - 30 + "vh";
+          }
+
+          el.style.left = startX;
+          el.style.top = startY;
+          const size = Math.random() * 25 + 35;
+          el.style.fontSize = size + "px";
+          const duration = Math.random() * 6 + 6;
+
+          el.animate(
+            [
+              { transform: `translate(0, 0) rotate(0deg)`, opacity: 0 },
+              { opacity: 0.9, offset: 0.2 },
+              { opacity: 0.9, offset: 0.8 },
+              {
+                transform: `translate(${endX}, ${endY}) rotate(${Math.random() * 1080}deg)`,
+                opacity: 0,
+              },
+            ],
+            { duration: duration * 1000, easing: "ease-in-out" },
+          );
+
+          container.appendChild(el);
+          setTimeout(() => el.remove(), duration * 1000);
+        }
+
+        for (let i = 0; i < 30; i++) {
+          setTimeout(createFloatingElement, i * 150);
+        }
+        setInterval(createFloatingElement, 350);
+
+        const noBtn = document.getElementById("noBtn");
+        const yesBtn = document.getElementById("yesBtn");
+        const cardArea = document.getElementById("cardArea");
+        const posters = document.querySelectorAll(".poster");
+        const finalMsg = document.getElementById("final-msg");
+        const trustMsg = document.getElementById("trust-msg");
+        const overlay = document.getElementById("overlay");
+        const boyBubble = document.getElementById("boyBubble");
+
+        setTimeout(() => {
+          if (boyBubble) boyBubble.classList.add("show");
+        }, 800);
+
+        const moveNo = () => {
+          const x = Math.random() * 240 - 120;
+          const y = Math.random() * 180 - 90;
+          noBtn.style.transform = `translate(${x}px, ${y}px)`;
+        };
+        noBtn.addEventListener("mouseover", moveNo);
+        noBtn.addEventListener("touchstart", (e) => {
+          e.preventDefault();
+          moveNo();
+        });
+
+        yesBtn.addEventListener("click", () => {
+          cardArea.style.display = "none";
+          finalMsg.style.display = "block";
+          posters.forEach((p) => {
+            p.style.display = "block";
+            makeDraggable(p);
+          });
+          setInterval(createFloatingElement, 100);
+        });
+
+        let topZ = 120;
+        let movedPosters = new Set();
+
+        function makeDraggable(el) {
+          let pos1 = 0,
+            pos2 = 0,
+            pos3 = 0,
+            pos4 = 0;
+          el.onmousedown = dragMouseDown;
+          el.ontouchstart = dragMouseDown;
+
+          function dragMouseDown(e) {
+            finalMsg.classList.remove("hover-animation");
+            finalMsg.innerText =
+              "Captured Memories, Endless Love";
+            topZ++;
+            el.style.zIndex = topZ;
+            el.classList.add("dragging");
+
+            if (e.type === "touchstart") {
+              pos3 = e.touches[0].clientX;
+              pos4 = e.touches[0].clientY;
+            } else {
+              pos3 = e.clientX;
+              pos4 = e.clientY;
+            }
+            document.onmouseup = closeDragElement;
+            document.ontouchend = closeDragElement;
+            document.onmousemove = elementDrag;
+            document.ontouchmove = elementDrag;
+          }
+
+          function elementDrag(e) {
+            let clientX, clientY;
+            if (e.type === "touchmove") {
+              clientX = e.touches[0].clientX;
+              clientY = e.touches[0].clientY;
+            } else {
+              clientX = e.clientX;
+              clientY = e.clientY;
+            }
+            pos1 = pos3 - clientX;
+            pos2 = pos4 - clientY;
+            pos3 = clientX;
+            pos4 = clientY;
+            el.style.top = el.offsetTop - pos2 + "px";
+            el.style.left = el.offsetLeft - pos1 + "px";
+            movedPosters.add(el.dataset.id);
+          }
+
+          function closeDragElement() {
+            el.classList.remove("dragging");
+            const restingRot = Math.random() * 20 - 10;
+            el.style.transform = `translate(-50%, -50%) rotate(${restingRot}deg)`;
+
+            if (movedPosters.size === 8) {
+              setTimeout(() => {
+                posters.forEach((p) => (p.style.opacity = "0.3"));
+                overlay.style.display = "block";
+                trustMsg.style.display = "block";
+              }, 400);
+            }
+            document.onmouseup = null;
+            document.onmousemove = null;
+            document.ontouchend = null;
+            document.ontouchmove = null;
+          }
+        }
+
+        document.addEventListener("contextmenu", (e) => e.preventDefault());
+        document.onkeydown = function (e) {
+          if (
+            e.keyCode == 123 ||
+            (e.ctrlKey && [85, 83, 73, 74].includes(e.keyCode))
+          )
+            return false;
+        };
+      }
+    </script>
+  </body>
+</html>
